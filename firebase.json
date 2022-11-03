@@ -1,0 +1,31 @@
+{
+  "hosting": [
+    {
+      "target": "sattaresults",
+      "public": "apps/sattaresults/out",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    },
+    {
+      "target": "superfastking",
+      "public": "apps/superfastking/out",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    },
+    {
+      "target": "galiresult",
+      "public": "apps/galiresult/out",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ]
+}

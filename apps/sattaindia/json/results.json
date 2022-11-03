@@ -1,0 +1,11 @@
+{
+  "result": {
+    "id": 1,
+    "name": "Next.js",
+    "time": "04:00 AM",
+    "oldResult": "55",
+    "newResult": "54",
+    "isPremium": "yes",
+    "isDeactive": "no"
+  }
+}

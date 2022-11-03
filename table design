@@ -1,0 +1,32 @@
+/** @format */
+
+import React from 'react';
+import { Markets } from 'ui';
+import { Dates } from 'ui';
+
+function Table() {
+  return (
+    <div>
+      <div className='space-y-2 border'>
+        <td className='... border   '>MARKET/ DATE</td>
+        {Dates.map((date) => (
+          <>
+            <td className='w-full border   '>{date.date}</td>
+          </>
+        ))}
+        {Markets.map((market) => (
+          <div className='  rounded-lg border-4 border-yellow-700'>
+            <table className='flex  '>
+              <p className='... border w-full '>{market.name}</p>
+
+              <p className='... border w-full '>{market.newResult}</p>
+            </table>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default Table;
+

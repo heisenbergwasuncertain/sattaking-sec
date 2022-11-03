@@ -1,0 +1,17 @@
+/** @format */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .theme-site {
+    @apply font-sans text-base bg-slate-400 text-white items-center justify-center;
+  }
+  .bordero {
+    @apply p-1 border-4 text-center font-bold border-black rounded-lg w-full;
+  }
+  .charts {
+    @apply flex items-center justify-center border-2 bg-white text-black;
+  }
+}

@@ -1,0 +1,56 @@
+name: Firebase Apps deployment
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "apps/sattaresults/**"
+      - "apps/superfastking/**"
+      - "apps/galiresult/**"
+      - ".github/workflows/firebase_deployments.yaml"
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "apps/sattaresults/**"
+      - "apps/superfastking/**"
+      - "apps/galiresult/**"
+
+jobs:
+  build:
+    name: Build and deploy
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    # To use Remote Caching, uncomment the next lines and follow the steps below.
+    # env:
+    #   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    #   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7.11.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: pnpm run firebase-prod
+
+      - name: firebase deployment
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_HEISENBERG_NETWORK }}"
+          channelId: live
+          projectId: heisenberg-network

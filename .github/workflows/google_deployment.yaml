@@ -1,0 +1,89 @@
+name: Google Sites Deployment
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "apps/gali-result/**"
+      - "apps/satta-king/**"
+      - "apps/satta-no/**"
+      - ".github/workflows/google_deployment.yaml"
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "apps/gali-result/**"
+      - "apps/satta-king/**"
+      - "apps/satta-no/**"
+
+jobs:
+  build:
+    name: Build and deploy
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    # To use Remote Caching, uncomment the next lines and follow the steps below.
+    # env:
+    #   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    #   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: "Google cloud auth"
+        uses: "google-github-actions/auth@v0"
+        with:
+          workload_identity_provider: "projects/667755868216/locations/global/workloadIdentityPools/git-pool/providers/git-provider"
+          service_account: "my-service-account@turnkey-cooler-348802.iam.gserviceaccount.com"
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7.11.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: pnpm run google-prod
+
+      - name: "Gali-result Google cloud deploy"
+        uses: "google-github-actions/upload-cloud-storage@v0"
+        with:
+          path: "apps/gali-result/out/."
+          destination: "gali-result"
+
+      - name: "satta-king Google cloud deploy"
+        uses: "google-github-actions/upload-cloud-storage@v0"
+        with:
+          path: "apps/satta-king/out/."
+          destination: "satta-king"
+
+      - name: "satta-no Google cloud deploy"
+        uses: "google-github-actions/upload-cloud-storage@v0"
+        with:
+          path: "apps/satta-no/out/."
+          destination: "satta-no"
+
+      # - name: send telegram message on push
+      #   uses: appleboy/telegram-action@mastersatta-no
+      #   with:
+      #     to: ${{ secrets.TELEGRAM_TO }}
+      #     token: ${{ secrets.TELEGRAM_TOKEN }}
+      #     message: |
+      #       ${{ github.actor }} created commit:
+      #       Commit message: ${{ github.event.commits[0].message }}
+
+      #       Repository: ${{ github.repository }}
+
+      #       See changes: https://github.com/${{ github.repository }}/commit/${{github.sha}}

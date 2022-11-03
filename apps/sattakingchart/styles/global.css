@@ -1,0 +1,11 @@
+/** @format */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer Component {
+  .content-cover {
+    @apply border-yellow-500 border-2 rounded-lg p-2;
+  }
+}

@@ -1,0 +1,71 @@
+name: Surge Sites deployment
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "apps/sattachart/**"
+      - "apps/sattaking786/**"
+      - "apps/sattakingchart/**"
+      - ".github/workflows/surge_deployments.yaml"
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "apps/sattachart/**"
+      - "apps/sattaking786/**"
+      - "apps/sattakingchart/**"
+
+jobs:
+  build:
+    name: Build and deploy
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    # To use Remote Caching, uncomment the next lines and follow the steps below.
+    # env:
+    #   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    #   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7.11.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: pnpm run surge-prod
+
+      - name: sattachart.surge.sh
+        uses: dswistowski/surge-sh-action@v1.0.1
+        with:
+          domain: sattachart.surge.sh
+          project: apps/sattachart/out
+          token: ${{ secrets.SURGE_TOKEN }}
+          login: ${{ secrets.SURGE_LOGIN }}
+
+      - name: sattaking786.surge.sh
+        uses: dswistowski/surge-sh-action@v1.0.1
+        with:
+          domain: sattaking786.surge.sh
+          project: apps/sattaking786/out
+          token: ${{ secrets.SURGE_TOKEN }}
+          login: ${{ secrets.SURGE_LOGIN }}
+
+      - name: sattakingchart.surge.sh
+        uses: dswistowski/surge-sh-action@v1.0.1
+        with:
+          project: apps/sattakingchart/out
+          domain: sattakingchart.surge.sh
+          token: ${{ secrets.SURGE_TOKEN }}
+          login: ${{ secrets.SURGE_LOGIN }}

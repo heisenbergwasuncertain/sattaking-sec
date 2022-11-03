@@ -1,0 +1,32 @@
+{
+  "name": "sattaking",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "netlify-prod": "turbo run netlify-prod",
+    "surge-prod": "turbo run surge-prod",
+    "firebase-prod": "turbo run firebase-prod",
+    "google-prod": "turbo run google-prod",
+    "pages-prod": "turbo run pages-prod",
+    "dev": "turbo run dev --parallel",
+    "lint": "turbo run lint",
+    "export": "turbo run export",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "eslint-config-custom": "workspace:*",
+    "prettier": "latest",
+    "turbo": "latest"
+  },
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "packageManager": "pnpm@7.6.0"
+}

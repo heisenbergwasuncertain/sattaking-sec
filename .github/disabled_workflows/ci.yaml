@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  build:
+    name: Build and deploy
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    # To use Remote Caching, uncomment the next lines and follow the steps below.
+    # env:
+    #   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    #   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 7.11.0
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      # - name: export
+      #   run: pnpm run export
+
+      # - name: add surge
+      #   run: pnpm add -d surge
+
+      - name: sattachart.surge.sh
+        uses: dswistowski/surge-sh-action@v1.0.1
+        with:
+          domain: sattachart.surge.sh
+          project: apps/sattachart/out
+          token: ${{ secrets.SURGE_TOKEN }}
+          login: ${{ secrets.SURGE_LOGIN }}
+
+      - name: sattaking786.surge.sh
+        uses: dswistowski/surge-sh-action@v1.0.1
+        with:
+          domain: sattaking786.surge.sh
+          project: apps/sattaking786/out
+          token: ${{ secrets.SURGE_TOKEN }}
+          login: ${{ secrets.SURGE_LOGIN }}
+
+      - name: sattakingchart.surge.sh
+        uses: dswistowski/surge-sh-action@v1.0.1
+        with:
+          project: apps/sattakingchart/out
+          domain: sattakingchart.surge.sh
+          token: ${{ secrets.SURGE_TOKEN }}
+          login: ${{ secrets.SURGE_LOGIN }}
+
+      - name: sattakingfaridabad.pages.dev
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: sattakingfaridabad # e.g. 'my-project'
+          directory: apps/sattakingfaridabad/out # e.g. 'dist'
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: sattakingfast.pages.dev
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: sattakingfast # e.g. 'my-project'
+          directory: apps/sattakingfast/out # e.g. 'dist'
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: sattakingresult.pages.dev
+        uses: cloudflare/pages-action@1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: sattakingresult # e.g. 'my-project'
+          directory: apps/sattakingresult/out # e.g. 'dist'
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: firebase deployment
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_HEISENBERG_NETWORK }}"
+          channelId: live
+          projectId: heisenberg-network
